@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/schemas/ctid-record-v0.1.schema.json",
+  "title": "CTID Record v0.1",
+  "description": "Schema for Communication Trace ID records in Communication Royalty OS.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "ctid",
+    "root_ctid",
+    "parent_ctids",
+    "event_type",
+    "timestamp",
+    "actor",
+    "target",
+    "semantic_digest",
+    "permissions",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "ctid-record-v0.1"
+    },
+    "ctid": {
+      "type": "string",
+      "pattern": "^ctid:v0\\.1:[a-z0-9][a-z0-9_-]*:[A-Za-z0-9._:-]+$"
+    },
+    "root_ctid": {
+      "type": "string",
+      "pattern": "^ctid:v0\\.1:[a-z0-9][a-z0-9_-]*:[A-Za-z0-9._:-]+$"
+    },
+    "parent_ctids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^ctid:v0\\.1:[a-z0-9][a-z0-9_-]*:[A-Za-z0-9._:-]+$"
+      },
+      "uniqueItems": true
+    },
+    "thread_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "reference",
+        "summarize",
+        "respond",
+        "reuse",
+        "transform",
+        "relay",
+        "invoke",
+        "evaluate"
+      ]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "actor": {
+      "$ref": "#/$defs/party"
+    },
+    "target": {
+      "$ref": "#/$defs/party"
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "context_envelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "session_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "language": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "semantic_digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "summary",
+        "content_hash"
+      ],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content_hash": {
+          "type": "string",
+          "pattern": "^sha256:[A-Fa-f0-9]{64}$"
+        }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trace_allowed",
+        "summarize_allowed",
+        "reuse_allowed",
+        "attribution_mode"
+      ],
+      "properties": {
+        "trace_allowed": {
+          "type": "boolean"
+        },
+        "summarize_allowed": {
+          "type": "boolean"
+        },
+        "reuse_allowed": {
+          "type": "boolean"
+        },
+        "attribution_mode": {
+          "type": "string",
+          "enum": [
+            "required",
+            "optional",
+            "forbidden"
+          ]
+        }
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_hash",
+        "signature"
+      ],
+      "properties": {
+        "record_hash": {
+          "type": "string",
+          "pattern": "^sha256:[A-Fa-f0-9]{64}$"
+        },
+        "signature": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "observed",
+        "verified",
+        "disputed",
+        "settled"
+      ]
+    },
+    "contribution_hints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "depth": {
+          "$ref": "#/$defs/score01"
+        },
+        "diffusion": {
+          "$ref": "#/$defs/score01"
+        },
+        "structural_purity": {
+          "$ref": "#/$defs/score01"
+        },
+        "influence_score": {
+          "$ref": "#/$defs/score01"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "party": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actor_id",
+        "actor_type"
+      ],
+      "properties": {
+        "actor_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_type": {
+          "type": "string",
+          "enum": [
+            "human",
+            "ai_agent",
+            "system",
+            "organization"
+          ]
+        }
+      }
+    },
+    "score01": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    }
+  }
+}
