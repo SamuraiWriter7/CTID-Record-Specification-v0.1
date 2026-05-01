@@ -1,0 +1,83 @@
+name: Validate Specs
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install jsonschema PyYAML
+
+      - name: Validate JSON Schema samples
+        run: |
+          python - <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          import yaml
+          from jsonschema import Draft202012Validator
+
+          CASES = [
+              (
+                  "CTID Record v0.1",
+                  "schemas/ctid-record-v0.1.schema.json",
+                  "examples/ctid-record.sample.json",
+              ),
+          ]
+
+          def load_doc(path_str):
+              path = Path(path_str)
+              if not path.exists():
+                  raise FileNotFoundError(f"File not found: {path}")
+
+              text = path.read_text(encoding="utf-8")
+              if path.suffix in {".yaml", ".yml"}:
+                  return yaml.safe_load(text)
+              elif path.suffix == ".json":
+                  return json.loads(text)
+              else:
+                  raise ValueError(f"Unsupported file type: {path}")
+
+          failed = False
+
+          for title, schema_path, sample_path in CASES:
+              print(f"\n=== Validating {title} ===")
+              print(f"Schema: {schema_path}")
+              print(f"Sample: {sample_path}")
+
+              try:
+                  schema = load_doc(schema_path)
+                  sample = load_doc(sample_path)
+
+                  Draft202012Validator.check_schema(schema)
+                  validator = Draft202012Validator(schema)
+                  validator.validate(sample)
+
+                  print(f"OK: {title} sample is valid.")
+              except Exception as e:
+                  failed = True
+                  print(f"ERROR: {title} validation failed: {e}")
+
+          if failed:
+              sys.exit(1)
+
+          print("\nAll validations passed.")
+          PY
