@@ -1,0 +1,48 @@
+schema_version: "ctid-record-v0.1"
+
+ctid: "ctid:v0.1:kazene:01966d7e-8c5c-7b41-a9d0-4b8d5f3b11aa"
+root_ctid: "ctid:v0.1:kazene:01966d7e-8c5c-7b41-a9d0-4b8d5f3b11aa"
+parent_ctids: []
+
+thread_id: "thread:agent-dialogue-2026-05-01-001"
+event_type: "respond"
+timestamp: "2026-05-01T06:30:00Z"
+
+actor:
+  actor_id: "agent:masamune"
+  actor_type: "ai_agent"
+
+target:
+  target_id: "human:kazene"
+  target_type: "human"
+
+source_refs:
+  - "artifact:prompt-001"
+
+context_envelope:
+  channel: "human_to_ai"
+  session_id: "session:2026-05-01-a1"
+  task_id: "task:communication-royalty-definition"
+  language: "ja"
+
+semantic_digest:
+  summary: "通信印税OSの定義文に応答し、CTID仕様化への橋渡しを行った"
+  content_hash: "sha256:abc123def456abc123def456abc123def456abc123def456abc123def456abcd"
+
+permissions:
+  trace_allowed: true
+  summarize_allowed: true
+  reuse_allowed: false
+  attribution_mode: "required"
+
+integrity:
+  record_hash: "sha256:def456abc123def456abc123def456abc123def456abc123def456abc123def4"
+  signature: "ed25519:example-signature"
+
+status: "observed"
+
+contribution_hints:
+  depth: 0.82
+  diffusion: 0.41
+  structural_purity: 0.90
+  influence_score: 0.67
